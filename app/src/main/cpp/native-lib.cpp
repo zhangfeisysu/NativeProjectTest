@@ -2,6 +2,7 @@
 #include <string>
 #include "test/People.h"
 #include <base.h>
+#include <pthread.h>
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_affy_nativetest_MainActivity_stringFromJNI(
@@ -42,7 +43,7 @@ Java_com_affy_nativetest_MainActivity_callNativeStrArray(JNIEnv *env, jobject th
     int length = env->GetArrayLength(str_array);
     LOGD("str_array len %d", length);
     jstring element = static_cast<jstring>(env->GetObjectArrayElement(str_array, 0));
-    const char *firstChar = env->GetStringUTFChars(element, false);
+    const char *firstChar = env->GetStringUTFChars(element, 0);
     LOGD("the first string is %s", firstChar);
     env->ReleaseStringUTFChars(element, firstChar);
 //    return env->NewStringUTF(chars);
@@ -88,4 +89,22 @@ Java_com_affy_nativetest_MainActivity_accessStaticMethod(JNIEnv *env, jobject th
         env->SetObjectArrayElement(strArray, i, env->NewStringUTF("string in native "));
     }
     env->CallStaticVoidMethod(clazz, mid, strArray);
+}
+
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_com_affy_nativetest_MainActivity_invokeConstructors(JNIEnv *env, jobject thiz) {
+    jclass clazz = env->FindClass("com/affy/nativetest/bean/Animal");
+    jmethodID methodId = env->GetMethodID(clazz, "<init>", "(Ljava/lang/String;)V");
+    return env->NewObject(clazz, methodId, env->NewStringUTF("this is animal a"));
+}
+
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_com_affy_nativetest_MainActivity_allocConstructors(JNIEnv *env, jobject thiz) {
+    jclass clazz = env->FindClass("com/affy/nativetest/bean/Animal");
+    jmethodID methodId = env->GetMethodID(clazz, "<init>", "(Ljava/lang/String;)V");
+    jobject animal = env->AllocObject(clazz);
+    env->CallNonvirtualVoidMethod(animal, clazz, methodId, env->NewStringUTF("this is animal b"));
+    return animal;
 }

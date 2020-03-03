@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.affy.nativetest.bean.Animal;
+
 public class MainActivity extends AppCompatActivity {
     private String name;
     private static int num;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
                 accessInstanceMethod();
                 accessStaticMethod();
+
+                Log.d("affy", invokeConstructors().getName());
+                Log.d("affy", allocConstructors().getName());
             }
         });
     }
@@ -81,4 +86,8 @@ public class MainActivity extends AppCompatActivity {
     public native void accessInstanceMethod();
 
     public native void accessStaticMethod();
+
+    public native Animal invokeConstructors();
+
+    public native Animal allocConstructors();
 }
